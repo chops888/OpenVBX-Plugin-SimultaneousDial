@@ -30,6 +30,9 @@ $no_answer_redirect = AppletInstance::getDropZoneUrl('no-answer-redirect');
 $no_answer_redirect_number = AppletInstance::getDropZoneUrl('no-answer-redirect-number');
 
 $numbers = array();
+//cvs mod
+$clients = array();
+//end cvs mod
 $voicemail = null;
 
 if ($dial_whom_selector === 'user-or-group')
@@ -56,9 +59,21 @@ if ($dial_whom_selector === 'user-or-group')
 				$user = VBX_User::get($user->user_id);
 				foreach($user->devices as $device)
 				{
-					if($device->is_active == 1)
-						$numbers[] = $device->value;
+					//CVS mod
+					if (strpos($device->value, 'client:') !== false)
+					{
+						if($device->is_active == 1)
+							$clients[] = str_replace('client:', '', $device->value);
+						
+					}
+					else
+					{
+						if($device->is_active == 1)
+							$numbers[] = $device->value;
+					}
+					//end CVS mod
 				}
+
 			}
 			$voicemail = $no_answer_group_voicemail;
 			break;
@@ -133,14 +148,22 @@ while($keepLooping)
 					// In practice, this should never ever happen.
 					$name = "Unknown";
 				}
-				
-        foreach($numbers as $number) {
-          $dial->addNumber($number,
-                  array(
-                      'url' => site_url('twiml/whisper?name='.urlencode($name)),
-                      )
-                  );
-        }
+				//cvs mod
+				foreach($clients as $client) {
+					$dial->addClient($client,
+					array(
+					'url' => site_url('twiml/whisper?name='.urlencode($name)),
+					)
+					);
+				}
+				//end cvs mod
+		        foreach($numbers as $number) {
+		          $dial->addNumber($number,
+		                  array(
+		                      'url' => site_url('twiml/whisper?name='.urlencode($name)),
+		                      )
+		                  );
+		        }
 			}
 			else
 			{
