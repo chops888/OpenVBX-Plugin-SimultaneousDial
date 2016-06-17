@@ -49,7 +49,16 @@ if ($dial_whom_selector === 'user-or-group')
 			foreach($dial_whom_user_or_group->devices as $device)
 			{
 				if($device->is_active == 1)
-					$numbers[] = $device->value;
+				{
+					if(strpos($device->value, 'client:') !== false)
+					{
+						$clients[] = str_replace('client:', '', $device->value);
+					}
+					else
+					{
+						$numbers[] = $device->value;
+					}
+				}
 			}
 			$voicemail = $dial_whom_user_or_group->voicemail;
 			break;
@@ -60,16 +69,16 @@ if ($dial_whom_selector === 'user-or-group')
 				foreach($user->devices as $device)
 				{
 					//CVS mod
-					if (strpos($device->value, 'client:') !== false)
+					if($device->is_active == 1)
 					{
-						if($device->is_active == 1)
+						if(strpos($device->value, 'client:') !== false)
+						{
 							$clients[] = str_replace('client:', '', $device->value);
-						
-					}
-					else
-					{
-						if($device->is_active == 1)
+						}
+						else
+						{
 							$numbers[] = $device->value;
+						}
 					}
 					//end CVS mod
 				}
@@ -157,13 +166,13 @@ while($keepLooping)
 					);
 				}
 				//end cvs mod
-		        foreach($numbers as $number) {
-		          $dial->addNumber($number,
-		                  array(
-		                      'url' => site_url('twiml/whisper?name='.urlencode($name)),
-		                      )
-		                  );
-		        }
+		        	foreach($numbers as $number) {
+		          		$dial->addNumber($number,
+		                  	array(
+		                      	'url' => site_url('twiml/whisper?name='.urlencode($name)),
+		                      	)
+		                  	);
+		        	}
 			}
 			else
 			{
