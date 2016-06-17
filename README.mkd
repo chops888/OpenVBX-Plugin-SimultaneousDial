@@ -5,6 +5,8 @@ built-in Dial applet (as of this writing), except that group dialing is
 performed with all members being dialed simultaneously. The first person to pick
 up "wins" the call.
 
+*** This fork has the ability to ring the user's browserphone as well. ***
+
 # INSTALLATION
 
 Do the following:
